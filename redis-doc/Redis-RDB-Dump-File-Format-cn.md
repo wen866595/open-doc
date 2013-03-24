@@ -21,30 +21,28 @@ rdb文件格式为快速读和写优化。LZF压缩可以用来减少文件大�
 52 45 44 49 53              # 魔术字符串 "REDIS"
 00 00 00 03                 # RDB 版本号，高位优先。在这种情况下，版本是 0003 = 3
 ----------------------------
-FE 00                       # FE = code that indicates database selector. db number = 00
-----------------------------# Key-Value pair starts
-FD $unsigned int            # FD indicates "expiry time in seconds". After that, expiry time is read as a 4 byte unsigned int
-$value-type                 # 1 byte flag indicating the type of value - set, map, sorted set etc.
-$string-encoded-key         # The key, encoded as a redis string
-$encoded-value              # The value. Encoding depends on $value-type
+FE 00                       # FE = code 指出数据库选择器. 数据库号 = 00
+----------------------------# 键值对开始
+FD $unsigned int            # FD 指出 "有效期限时间是秒为单位". 在这之后，读取4字节无符号整数作为有效期限时间。
+$value-type                 # 1 字节标记指出值的类型 － set，map，sorted set 等。
+$string-encoded-key         # 键，编码为一个redis字符串。
+$encoded-value              # 值，编码取决于 $value-type.
 ----------------------------
-FC $unsigned long           # FC indicates "expiry time in ms". After that, expiry time is read as a 8 byte unsigned long
-$value-type                 # 1 byte flag indicating the type of value - set, map, sorted set etc.
-$string-encoded-key         # The key, encoded as a redis string
-$encoded-value              # The value. Encoding depends on $value-type
+FC $unsigned long           # FC 指出 "有效期限时间是豪秒为单位". 在这之后，读取8字节无符号长整数作为有效期限时间。
+$value-type                 # 1 字节标记指出值的类型 － set，map，sorted set 等。
+$string-encoded-key         # 键，编码为一个redis字符串。
+$encoded-value              # 值，编码取决于 $value-type.
 ----------------------------
-$value-type                 # This key value pair doesn't have an expiry. $value_type guaranteed != to FD, FC, FE and FF
+$value-type                 # 这个键值对没有有效期限。$value_type 保证 != to FD, FC, FE and FF
 $string-encoded-key
 $encoded-value
 ----------------------------
-FE $length-encoding         # Previos db ends, next db starts. Database number read using length encoding.
+FE $length-encoding         # 前一个数据库结束，下一个数据库开始。数据库号用长度编码读取。
 ----------------------------
-...                         # Key value pairs for this database, additonal database
-
+...                         # 这个数据库的键值对，另外的数据库。
 FF                          ## RDB 文件结束指示器
 8 byte checksum             ## 整个文件的 CRC 32 校验和。
 </code></pre>
-
 
 
 # 魔术数
@@ -105,9 +103,9 @@ FF                          ## RDB 文件结束指示器
 # 值
 值的编码取决于值类型标记。
 
-> 当值类型 ＝ 0，值是简单字符串。
-> 当值类型是 9， 10， 11 或 12 中的一个，值被包装为字符串。读取字符串后，它必须进一步解析。
-> 当值类型是1，2，3 或 4 中的一个，值是一序列字符串。这个序列字符串用于构造list，set，sorted set或hashmap。
+* 当值类型 ＝ 0，值是简单字符串。
+* 当值类型是 9， 10， 11 或 12 中的一个，值被包装为字符串。读取字符串后，它必须进一步解析。
+* 当值类型是1，2，3 或 4 中的一个，值是一序列字符串。这个序列字符串用于构造list，set，sorted set或hashmap。
 
 
 # 长度编码
@@ -185,39 +183,43 @@ Set 编码与list完全类似。
 # Zipmap 编码
 *注意：Zipmap编码从Redis 2.6开始已弃用。小的的hashmap编码为ziplist。*
 
-A Zipmap is a hashmap that has been serialized to a string. In essence, the key value pairs are stored sequentially. Looking up a key in this structure is O(N). This structure is used instead of a dictionary when the number of key value pairs are small. 
+Zipmap是一个被序列化为一个字符串的hashmap。本质上，键值对按顺序存储。在这种结构里查找一个键的复杂度是O(N)。
+当键值对数量很少时，这个结构用于替代dictionary。
 
-To parse a zipmap, first a string is read from the stream using “String Encoding”. This string is the envelope of the zipmap. The contents of this string represent the zipmap. 
+为解析zipmap，首先用“字符串编码”从流读取一个字符串。这个字符串包装了zipmap。字符串的内容表示了zipmap。
 
-The structure of a zipmap within this string is as follows – 
->  <zmlen><len>"foo"<len><free>"bar"<len>"hello"<len><free>"world"<zmend>
+字符串里的zipmap结构如下：
+<pre><code>
+  <zmlen><len>"foo"<len><free>"bar"<len>"hello"<len><free>"world"<zmend>
 
->  1.  zmlen : Is a 1 byte length that holds the size of the zip map. If it is greater than or equal to 254, value is not used. You will have to iterate the entire zip map to find the length.
->  2.  len : Is the length of the following string, which can be either a key or a value. This length is stored in either 1 byte or 5 bytes (yes, it differs from “Length Encoding” described above).
-         If the first byte is between 0 and 252, that  is the length of the zipmap. If the first byte is 253, then the next 4 bytes read as an unsigned integer represent the length of the zipmap. 
-          254 and 255 are invalid values for this field. 
->  3.  free : This is always 1 byte, and indicates the number of free bytes after the value. For example, if the value of a key is “America” and its get updated to “USA”, 4 free bytes will be available.
->  4.  zmend : Always 255. Indicates the end of the zipmap. 
+  1.  zmlen : 1字节长，保存zipmap的大小. 如果大于等于254，值不使用。将需要迭代整个zipmap来找出长度.
+  2.  len : 后续字符串的长度，可以是键或值的。这个长度存储为1个或5个字节（与上面描述的“长度编码”不同）。
+            如果第一个字节位于 0 到252，那么它是zipmap的长度。如果第一个字节是253，读取下4个字节作为无符号整数来表示zipmap的长度。
+            254 和 255 对这个字段是非法的. 
+  3.  free : 总是1字节，指出值后面的空闲字节数。例如，如果键的值是“America”，更新为“USA”后，将有4个空闲的字节.
+  4.  zmend : 总是 255. 指出zipmap结束. 
 
-##  Worked Example
-18 02 06 4d 4b 44 31 47 36 01 00 32 05 59 4e 4e 58 4b 04 00 46 37 54 49 ff ..
+##  有效的例子
+  18 02 06 4d 4b 44 31 47 36 01 00 32 05 59 4e 4e 58 4b 04 00 46 37 54 49 ff ..
 
->  1.  Start by decoding this using “String Encoding”. You will notice that 18 is the length of the string. Accordingly, we will read the next 24 bytes i.e. upto ff
->  2.   Now, we are parsing the string starting at @02 06… @ using the “Zipmap Encoding”
->  3.  02 is the number of entries in the hashmap.
->  4.  06 is the length of the next string. Since this is less than 254, we don’t have to read any additional bytes
->  5.  We read the next 6 bytes i.e. 4d 4b 44 31 47 36 to get the key “MKD1G6”
->  6.  01 is the length of the next string, which would be the value
->  7.  00 is the number of free bytes
->  8.  We read the next 1 byte(s), which is 0x32. Thus, we get our value “2”
->  9.   In this case, the free bytes is 0, so we don’t skip anything
->  10.  05 is the length of the next string, in this case a key.
->  11.  We read the next 5 bytes 59 4e 4e 58 4b, to get the key “YNNXK”
->  12.  04 is the length of the next string, which is a value
->  13.  00 is the number of free bytes after the value
->  14.  We read the next 4 bytes i.e. 46 37 54 49 to get the value “F7TI”
->  15.  Finally, we encounter FF, which indicates the end of this zip map
->  16.  Thus, this zip map represents the hash {"MKD1G6" => "2", "YNNXK" => "F7TI"}
+  1.  从使用“字符串编码”开始解码。你会注意到18是字符串的长度。因此，我们将读取下24个字节，直到ff。
+  2.  现在，我们开始解析从  @02 06… @ 开始的字符串，使用 “Zipmap 编码”
+  3.  02是hashmap里条目的数量.
+  4.  06是下一个字符串的长度. 因为长度小于254, 我们不需要读取任何额外的字节
+  5.  我们读取下6个字节  4d 4b 44 31 47 36 来得到键 “MKD1G6”
+  6.  01是下一个字符串的长度，这个字符串应当是值
+  7.  00是空闲字节的数量
+  8.  读取下一个字节 0x32，得到值“2”
+  9.   在这种情况下，空闲字节是0，所以不需要跳过任何东西
+  10.  05是下一个字符串的长度，在这种情况下是键。
+  11.  读取下5个字节 59 4e 4e 58 4b, 得到键 “YNNXK”
+  12.  04是下一个字符串的长度，这是一个值
+  13.  00是值后面的空闲字节数
+  14.  读取下4个字节 46 37 54 49 来得到值 “F7TI”
+  15.  最终，遇到 FF, 这表示这个zipmap的结束
+  16. 因此，这个zipmap表示hash {"MKD1G6" => "2", "YNNXK" => "F7TI"}
+</code></pre>
+
 
 
 # Ziplist 编码
