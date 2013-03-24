@@ -16,6 +16,7 @@ rdb文件格式为快速读和写优化。LZF压缩可以用来减少文件大�
 
 # 解析RDB的高层算法
 在高层层面看，RDB文件有下面的格式：
+<pre><code>
 ----------------------------# RDB 是一个二进制文件。文件里没有新行或空格。
 52 45 44 49 53              # 魔术字符串 "REDIS"
 00 00 00 03                 # RDB 版本号，高位优先。在这种情况下，版本是 0003 = 3
@@ -42,6 +43,7 @@ FE $length-encoding         # Previos db ends, next db starts. Database number r
 
 FF                          ## RDB 文件结束指示器
 8 byte checksum             ## 整个文件的 CRC 32 校验和。
+</code></pre>
 
 
 
@@ -65,10 +67,10 @@ FF                          ## RDB 文件结束指示器
 在数据库选择器之后，文件包含了一序列的键值对。
 
 每个键值对有4部分：
-1.  键保存期限时间戳。这是可选的。
-2.  一个字节标记值的类型。
-3.  键编码为Redis 字符串。见“Redis 字符串编码”。
-4.  值根据值类型进行编码。见“Redis 值编码”。
+>  1.  键保存期限时间戳。这是可选的。
+>  2.  一个字节标记值的类型。
+>  3.  键编码为Redis 字符串。见“Redis 字符串编码”。
+>  4.  值根据值类型进行编码。见“Redis 值编码”。
 
 
 # 键保存期限时间戳
@@ -84,16 +86,16 @@ FF                          ## RDB 文件结束指示器
 # 值类型
 一个字节标记指示用于保存值的编码。
 
-1.  0 ＝ “String 编码”
-2.  1 ＝ “ List 编码”
-3.  2 ＝ “Set 编码”
-4.  3 ＝ “Sorted Set 编码”
-5.  4 ＝ “Hash 编码”
-6.  9 ＝ “Zipmap 编码”
-7.  10 ＝ “Ziplist 编码”
-8.  11 ＝ “IntSet 编码”
-9.  12 ＝ “以 Ziplist 编码的 Sorted Set”
-10.  13 ＝ “以 Ziplist 编码的 Hashmap” （在rdb版本4中引入）
+>  1.  0 ＝ “String 编码”
+>  2.  1 ＝ “ List 编码”
+>  3.  2 ＝ “Set 编码”
+>  4.  3 ＝ “Sorted Set 编码”
+>  5.  4 ＝ “Hash 编码”
+>  6.  9 ＝ “Zipmap 编码”
+>  7.  10 ＝ “Ziplist 编码”
+>  8.  11 ＝ “IntSet 编码”
+>  9.  12 ＝ “以 Ziplist 编码的 Sorted Set”
+>  10.  13 ＝ “以 Ziplist 编码的 Hashmap” （在rdb版本4中引入）
 
 
 # 键
