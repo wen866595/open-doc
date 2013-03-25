@@ -68,11 +68,11 @@ Redis 转储文件是100%向后兼容的。旧的转储文件总是可以在新版的Redis里工作。
 ##  版本2
 这个版本为小的hashmap，list和set引入特殊的编码。
 
-特别是，它引入下面的编码类型 -
-REDIS_RDB_TYPE_HASH_ZIPMAP = 9
-REDIS_RDB_TYPE_LIST_ZIPLIST = 10
-REDIS_RDB_TYPE_SET_INTSET = 11
-REDIS_RDB_TYPE_ZSET_ZIPLIST = 12
+特别是，它引入下面的编码类型 -   
+REDIS_RDB_TYPE_HASH_ZIPMAP = 9   
+REDIS_RDB_TYPE_LIST_ZIPLIST = 10   
+REDIS_RDB_TYPE_SET_INTSET = 11   
+REDIS_RDB_TYPE_ZSET_ZIPLIST = 12   
 
 提交： <https://github.com/antirez/redis/commit/6b52ad87c05ca2162a2d21f1f5b5329bf52a7678>
 
