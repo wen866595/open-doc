@@ -1,9 +1,7 @@
 ﻿
 
-**
-译者： coderbee (wen866595@163.com)   
-转载请注明出处
-**
+**译者： coderbee (wen866595@163.com)   
+转载请注明出处**
 
 翻译自：
 <https://github.com/sripathikrishnan/redis-rdb-tools/wiki/Redis-RDB-Dump-File-Format>
