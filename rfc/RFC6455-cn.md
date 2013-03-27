@@ -13,26 +13,26 @@ ISSN: 2070-1721 Isode Ltd.                               December 2011
 **WebSocket 协议**
 
 ## 摘要
-WebSocket协议使在控制环境下运行不受信任代码的客户端和能够选择与那些代码通信的远程主机之间能够双向通信。用于这个的安全模型是以`origin`为基础的安全模型，一般被浏览器使用。协议包含打开握手，其次是基本消息框架，在`TCP`之上。这项技术的目的是为基于浏览器的、需要与服务器双向通信的应用程序提供一种不依赖于打开多个`HTTP`连接的机制（例如，使用`XMLHttpRequest` 或 `<iframe>` 和长轮询）。
+WebSocket协议使在控制环境下运行不受信任代码的客户端和能够选择与那些代码通信的远程主机之间能够双向通信。用于这个的安全模型是以`origin`为基础的安全模型，一般被浏览器使用。协议包含打开握手，其次是基本消息框架，在 TCP 之上。这项技术的目的是为基于浏览器的、需要与服务器双向通信的应用程序提供一种不依赖于打开多个HTTP连接的机制（例如，使用`XMLHttpRequest` 或 `<iframe>` 和长轮询）。
 
 ## 本备忘录的状态
 这是一个Internet标准跟踪文件。
 
-这个文档是因特网工程师任务组（IETF）的一个产品。它代表了IETF社区的共识。它已接受公众审查，因特网工程指导组（IESG）证明可出版。关于互联网标准的进一步信息在RFC5741的第2章节。
+这个文档是因特网工程师任务组（IETF）的一个产品。它代表了IETF社区的共识。它已接受公众审查，因特网工程指导组（IESG）证明可出版。关于互联网标准的进一步信息在`RFC5741`的第`2`章节。
 
-关于本文档当前状态的信息、勘误表和如何提供反馈，可以在<http://www.rfc-editor.org/info/rfc6455> 找到。
+关于本文档当前状态的信息、勘误表和如何提供反馈，可以在 <http://www.rfc-editor.org/info/rfc6455> 找到。
 
 ## 版权声明
 Copyright (c) 2011 IETF Trust and the persons identified as the document authors. All rights reserved.
 
-This document is subject to BCP 78 and the IETF Trust’s Legal Provisions Relating to IETF Documents (http://trustee.ietf.org/license-info) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.
+This document is subject to BCP 78 and the IETF Trust’s Legal Provisions Relating to IETF Documents (<http://trustee.ietf.org/license-info>) in effect on the date of publication of this document. Please review these documents carefully, as they describe your rights and restrictions with respect to this document. Code Components extracted from this document must include Simplified BSD License text as described in Section 4.e of the Trust Legal Provisions and are provided without warranty as described in the Simplified BSD License.
 
 
 # 1 介绍
 ## 1.1 背景
 这部分是不规范的。
 
-历史上，创建需要在客户端和服务器间双向通信的网络应用程序（如即时消息和游戏程序）要求滥用`HTTP`来轮询服务器来获得更新，通过不同`HTTP`请求来发送上行通知。
+历史上，创建需要在客户端和服务器间双向通信的网络应用程序（如即时消息和游戏程序）要求滥用 HTTP 来轮询服务器来获得更新，通过不同 HTTP 请求来发送上行通知。
 
 这导致各种问题：   
 
@@ -44,7 +44,7 @@ This document is subject to BCP 78 and the IETF Trust’s Legal Provisions Relat
 
 同样的技术也可用于各种web应用程序：游戏，股票行情，多用户协同编辑的应用程序，用户界面实时展示服务器侧服务等。
 
-WebSocket协议设计用来取代使用HTTP作为传输层的双向通信技术，并从现有的基础设施（代理、过滤、认证）受益。这些技术作为效率与可靠性的平衡而实现，因为HTTP最初并不是用于双向通信的（见`RFC6202`有多更讨论）。WebSocket尝试解决在现有HTTP基础设施的环境下现有HTTP双向通信技术的目标；像这样，它设计来工作于HTTP 80、443端口上，并支持HTTP代理和中间设施，即使这意味着增加现有环境的一些复杂性。然后，设计并没有将WebSocket局限于HTTP，未来的实现可以在特定的端口上使用更简单的握手，而不需要重新发明整个协议。最后一点是重要的，因为交互式消息的传输模式并不紧密符合标准的HTTP传输，会在一些部件上引起异常的负载。
+WebSocket协议设计用来取代使用HTTP作为传输层的双向通信技术，并从现有的基础设施（代理、过滤、认证）受益。这些技术作为效率与可靠性的平衡而实现，因为HTTP最初并不是用于双向通信的（见`RFC6202`有多更讨论）。WebSocket尝试解决在现有HTTP基础设施的环境下现有HTTP双向通信技术的目标；像这样，它设计来工作于HTTP `80`、`443`端口上，并支持HTTP代理和中间设施，即使这意味着增加现有环境的一些复杂性。然而，设计并没有将WebSocket局限于HTTP，未来的实现可以在特定的端口上使用更简单的握手，而不需要重新发明整个协议。最后一点是重要的，因为交互式消息的传输模式并不紧密符合标准的HTTP传输，会在一些部件上引起异常的负载。
 
 ## 1.2 协议概览
 这部分是不规范的。
@@ -71,15 +71,15 @@ Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
 Sec-WebSocket-Protocol: chat
 </code></pre>
 
-来自客户端的引导行遵从Request-Line格式，来自服务器的引导行遵从Status-Line格式。Request-Line和Status-Line 在[`RFC2616`]定义。
+来自客户端的引导行遵从`Request-Line`格式，来自服务器的引导行遵从`Status-Line`格式。`Request-Line`和`Status-Line` 在`RFC2616`定义。
 
-在两种情况下，引导行后面跟着一组未排序的头域。这些头域的意义在本文档的第4章指定。额外的头域也可能出现，如cookie [`RFC6265`]。头的格式和解析在[`RFC2616`]定义。
+在两种情况下，引导行后面跟着一组未排序的头域。这些头域的意义在本文档的第`4`章指定。额外的头域也可能出现，如cookie `RFC6265`。头的格式和解析在`RFC2616`定义。
 
 一旦客户端和服务器都发送了他们的握手，如果握手成功，传输数据部分开始。这是一个双向传输通道，每个端都能独立、随意发送数据。
 
-在成功握手后，客户端和服务器来回传输数据是以消息message为概念单位的。在传输介质上（on the wire），一个消息由一个或多个帧frame组成。WebSocket消息不需要对应到特定网络层的帧，因为分帧后的消息可能被中间设施合并或拆分。
+在成功握手后，客户端和服务器来回传输数据是以消息`message`为概念单位的。在传输介质上（on the wire），一个消息由一个或多个帧`frame`组成。WebSocket消息不需要对应到特定网络层的帧，因为分帧后的消息可能被中间设施合并或拆分。
 
-一帧都有一个关联的类型。属于同一个消息的帧拥有相同的数据类型，广义地说，有文本数据（解释为UTF-8[`RFC3629`]文本）、二进制数据（它的解释留给了应用程序）和控制帧（不打算携带应用数据，携带的是协议层的信号，如连接关闭信号）类型。这个版本的协议定义了6种帧类型，并保留了10种为以后使用。
+一帧都有一个关联的类型。属于同一个消息的帧拥有相同的数据类型，广义地说，有文本数据（解释为`UTF-8` `RFC3629`文本）、二进制数据（它的解释留给了应用程序）和控制帧（不打算携带应用数据，携带的是协议层的信号，如连接关闭信号）类型。这个版本的协议定义了`6`种帧类型，并保留了`10`种为以后使用。
 
 
 ## 1.3 打开握手
@@ -97,26 +97,26 @@ Sec-WebSocket-Protocol: chat, superchat
 Sec-WebSocket-Version: 13
 </code></pre>
 
-为了兼容[`RFC2616`]，客户端握手里的头域可能以任意的顺序发送，因此不同头域接收到的顺序是不重要的。
+为了兼容`RFC2616`，客户端握手里的头域可能以任意的顺序发送，因此不同头域接收到的顺序是不重要的。
 
-GET方法[RFC2616]的Request-URI用于识别WebSocket连接的终端，允许一个IP地址服务多个域domain，和允许单个服务器提供多个WebSocket终端。
+`GET`方法(`RFC2616`)的`Request-URI`用于识别WebSocket连接的终端，允许一个IP地址服务多个域domain，和允许单个服务器提供多个WebSocket终端。
 
-客户端在握手的`Host`头域里包含主机名，这样，客户端和服务器能够验证他们同意使用哪个主机。额外的头域用于选择WebSocket协议的选项。此版本中典型的可用选项有子协议选择器`Sec-WebSocket-Protocol`，`Sec-WebSocket-Protocol`列出客户端支持的扩展，`Origin`头域等等。`Sec-WebSocket-Protoco`l 请求头域可用来表明客户端可接受的子协议（WebSocket协议之上的应用程序层协议）。服务器选择一个或零个可接受的协议，输出到它的握手，来指明它选择了那个协议。
+客户端在握手的`Host`头域里包含主机名，这样，客户端和服务器能够验证他们同意使用哪个主机。额外的头域用于选择WebSocket协议的选项。此版本中典型的可用选项有子协议选择器`Sec-WebSocket-Protocol`，`Sec-WebSocket-Protocol`列出客户端支持的扩展，`Origin`头域等等。`Sec-WebSocket-Protocol `请求头域可用来表明客户端可接受的子协议（WebSocket协议之上的应用程序层协议）。服务器选择`1`个或`0`个可接受的协议，输出到它的握手，来指明它选择了那个协议。   
 `Sec-WebSocket-Protocol: chat`
 
-`Origin` 头域（`RFC6454`）用于保护WebSocket服务器不被未授权的运行在浏览器的脚本跨源使用WebSocket API。如果服务器不想接受来自这个源的连接，它可以拒绝连接，并发送一个合适的HTTP错误码。这个头域有浏览器客户端发送；对于非浏览器客户端，这个头域可能发送，如果它在客户端上下文环境中有意义。
+`Origin` 头域（`RFC6454`）用于保护WebSocket服务器不被未授权的运行在浏览器的脚本跨源使用WebSocket API。如果服务器不想接受来自这个源的连接，它可以拒绝连接，并发送一个合适的HTTP错误码。这个头域由浏览器客户端发送；对于非浏览器客户端，这个头域可能发送，如果它在客户端上下文环境中有意义。
 
 最后，服务器得向客户端证明它接收到了客户端的WebSocket握手，为使服务器不接受非WebSocket连接。这防止攻击者通过`XMLHttpRequest`发送或表单提交精心构造的包来欺骗WebSocket服务器。
 
 为了证明握手被接收，服务器把两块信息合并来形成响应。第一块信息来自客户端握手头域`Sec-WebSocket-Key`，如
 `Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==`
-对于这个头域，服务器取头的值（由于出现在头域，例如，base64编码[`RFC4648`]后的版本，消除任何前面后面的空白符），以字符串的形式拼接全局唯一的（GUID，[`RFC4122`]）标识：`258EAFA5-E914-47DA-95CA-C5AB0DC85B11`，此值不大可能被不明白WebSocket协议的网络终端使用。然后进行`SHA-1` hash（160位）编码，再进行`base64`编码，将结果作为服务器的握手返回。
+对于这个头域，服务器取头的值（由于出现在头域，例如，`base64`编码[`RFC4648`]后的版本，消除任何前面后面的空白符），以字符串的形式拼接全局唯一的（`GUID`，[`RFC4122`]）标识：`258EAFA5-E914-47DA-95CA-C5AB0DC85B11`，此值不大可能被不明白WebSocket协议的网络终端使用。然后进行`SHA-1` hash（`160`位）编码，再进行`base64`编码，将结果作为服务器的握手返回。
 
-具体如下：
-请求头：`Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==`
-取值，字符串拼接后得到：`"dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-C5AB0DC85B11"`;
-SHA-1后得到：` 0xb3 0x7a 0x4f 0x2c 0xc0 0x62 0x4f 0x16 0x90 0xf6 0x46 0x06 0xcf 0x38 0x59 0x45 0xb2 0xbe 0xc4 0xea`
-`Base64`后得到：` s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`
+具体如下：   
+请求头：`Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==`   
+取值，字符串拼接后得到：`"dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CA-C5AB0DC85B11"`;   
+`SHA-1`后得到：` 0xb3 0x7a 0x4f 0x2c 0xc0 0x62 0x4f 0x16 0x90 0xf6 0x46 0x06 0xcf 0x38 0x59 0x45 0xb2 0xbe 0xc4 0xea`   
+`Base64`后得到：` s3pPLMBiTxaQ9kYGzzhZRbK+xOo=`   
 最后的结果值作为响应头 `Sec-WebSocket-Accept` 的值。
 
 
@@ -158,7 +158,7 @@ Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
 ## 1.5 设计哲学
 这部分是不规范的。
 
-WebSocket协议的设计原则就是最小化框架（唯一的框架就是协议是基于帧的，而不是基于流的，并且支持区分Unicode文本和二进制帧的）。它希望元数据放在WebSocket上面的应用程序层。
+WebSocket协议的设计原则就是最小化框架（唯一的框架就是协议是基于帧的，而不是基于流的，并且支持区分`Unicode`文本和二进制帧的）。它希望元数据放在WebSocket上面的应用程序层。
 
 概念上，WebSocket确实只是TCP上面的一层，做下面的工作：
 为浏览器添加web 的`origin-based`的安全模型。
@@ -168,7 +168,7 @@ WebSocket协议的设计原则就是最小化框架（唯一的框架就是协�
 
 除了这些，WebSocket没有再添加任何东西。基本上，它想尽可能暴露原始的TCP给脚本，又给web约束。它还设计以这样的方式，它的服务器能和HTTP服务器共享同一个端口，通过使它的请求是一个合法的HTTP升级请求。在概念上可以使用其他的协议来建立客户端-服务器消息机制，但WebSocket的目的是提供一个相当简单的协议，能够与HTTP和已部署的HTTP基础设施共存（如代理），尽可能接近TCP，通过给定安全模型在现有基础设施上安全使用，伴随简化使用和使简单事情保持简单的额外目标。
 
-协议考虑到可扩展，未来的版本很可能引入额外的概念，如multiplexing.
+协议考虑到可扩展，未来的版本很可能引入额外的概念，如`multiplexing`。
 
 ## 1.6 安全模型
 这部分是不规范的。
@@ -177,7 +177,7 @@ WebSocket协议使用起源模型（origin model），浏览器用来限制哪�
 
 这个协议目的是不和现有协议（如SMTP、HTTP）的服务器建立连接，如果要求，允许HTTP服务器可选地支持此协议。这个通过一个严格的、精心制作的握手和在握手完成前限制数据进入连接来做到的。
 
-类似地，当其他协议的数据发送到WebSocket时，使连接失败。这主要是通过要求服务器证明它读取了握手，在只有当握手含有适当的部分时，这些部分只能由WebSocket客户端发送。特别是，在写这个规范时，以Sec- 开头的头不能被来自浏览器的攻击者使用HTML和JavaScript API如XMLHttpRequest发送。
+类似地，当其他协议的数据发送到WebSocket时，使连接失败。这主要是通过要求服务器证明它读取了握手，在只有当握手含有适当的部分时，这些部分只能由WebSocket客户端发送。特别是，在写这个规范时，以`Sec-`开头的头不能被来自浏览器的攻击者使用HTML和JavaScript API如`XMLHttpRequest`发送。
 
 
 ## 1.7 与TCP和HTTP的关系
@@ -199,7 +199,7 @@ WebSocket协议是独立的、基于TCP的协议。与HTTP的唯一关系是它�
 
 客户端可以通过在它的握手包含Sec-WebSocket-Protocol 头来要求服务器使用指定的子协议。如果指定了，为建立连接，服务器需要包含一个同样的头和一个选择了的子协议在它的响应。
 
-这些子协议的命名要按照11.5节注册。为了避免潜在的冲突，推荐使用带有子协议发起人的域名的ASCII版本号的名字。例如，Excaple集团准备创建一个聊天子协议，由web上的一些服务器来实现，它可以命名为`chat.example.com`。如果Example组织命名他们的竞争子协议为`chat.example.org`，那么两种子协议都能背服务器同时实现，由服务器根据客户端发送的数据动态选择使用子协议。
+这些子协议的命名要按照`11.5`节注册。为了避免潜在的冲突，推荐使用带有子协议发起人的域名的`ASCII`版本号的名字。例如，`Excaple`集团准备创建一个聊天子协议，由web上的一些服务器来实现，它可以命名为`chat.example.com`。如果Example组织命名他们的竞争子协议为`chat.example.org`，那么两种子协议都能背服务器同时实现，由服务器根据客户端发送的数据动态选择使用子协议。
 
 子协议的版本可以是向后不兼容的，通过改变子协议的名字，如从`bookings.example.net`到`v2.bookings.examples.net`。这些子协议可以认为完全独立于WebSocket客户端的。向后兼容的版本可通过复用同样的协议字符串来实现，但小心设计协议来支持扩展。
 
@@ -239,7 +239,7 @@ Note that this document uses both [RFC5234] and [RFC2616] variants of ABNF in di
 
 
 # 3 WebSocket URI
-本规范定义了两种URI方案，使用在RFC5234定义的ABNF语法、术语和在RFC3986定义的URI规范的ABNF成果。
+本规范定义了两种`URI`方案，使用在`RFC5234`定义的ABNF语法、术语和在`RFC3986`定义的URI规范的`ABNF`成果。
 <pre><code>
 ws-URI = "ws:" "//" host [ ":" port ] path [ "?" query ]
 wss-URI = "wss:" "//" host [ ":" port ] path [ "?" query ]
@@ -265,7 +265,7 @@ query = <query, defined in [RFC3986], Section 3.4>
 
 # 4 打开握手
 ## 4.1 客户端要求
-为建立WebSocket连接，客户端打开一个（TCP）连接并发送一个在这个章节里定义的握手。一个连接最初定义为CONNECTING状态。客户端需要提供WebSocket URI的部件：`host、port、resource name`和`secure`标志，这些都是第3章里讨论的WebSocket URI的组件，伴随使用一些协议和扩展。另外，如果客户端是个web浏览器，它提供`origin`。   
+为建立WebSocket连接，客户端打开一个（TCP）连接并发送一个在这个章节里定义的握手。一个连接最初定义为CONNECTING状态。客户端需要提供WebSocket URI的部件：`host、port、resource name`和`secure`标志，这些都是第`3`章里讨论的WebSocket URI的组件，伴随使用一些协议和扩展。另外，如果客户端是个web浏览器，它提供`origin`。   
 客户端运行在受限环境，如连接到特定关卡的移动手持设备上的浏览器，可能把连接的管理卸载给另一个网络代理。在这种情况下，用于本规范目的的客户端包括手持设备软件和任意的这类代理。
 
 当客户端准备用建立WebSocket 连接，给定的一组（`host，port，resource name，secure`标记），连同使用一序列协议和扩展，和在浏览器情况下有个`origin`，它必须打开一个（TCP）连接，发送一个打开握手，从响应里读取服务器的握手。（TCP）连接应该如何打开的准确要求，在打开握手应该发送什么，服务器响应应该如何解释，将在下面的章节里。在下面的文本里，我们将使用使用第3章里的名字，如`/host/`和`/secure/ flag`。
@@ -303,32 +303,47 @@ Clients MUST use the Server Name Indication extension in the TLS handshake [`RFC
 
 一旦到服务器的（TCP）连接建立（包括通过代理或TLS加密的通道），客户端必须发送一个打开握手到服务器。握手包含一个`HTTP Upgrade`请求，连同一些必须的和可选的头域。打开握手的要求如下：
 
-	1. 握手必须是一个合法的【RFC2616】规定的HTTP请求。
+1. 握手必须是一个合法的【RFC2616】规定的HTTP请求。
 	
-	2. 请求的方法必须是GET，HTTP版本必须至少是1.1。   
+2. 请求的方法必须是GET，HTTP版本必须至少是1.1。   
 		例如，如果WebSocket URI是"ws://example.com/chat"，发送的第一行应该是"GET /chat HTTP/1.1"。
-	3. 请求的Request-URI部分必须符合第3章定义的/resource name/，或者是绝对的`http/https URI`，当解析后，有个`/resource name/，/host/, /port/`，符合对应的`ws/wss `URI。
-	4. 请求必须含有Host头域，它的值包含/host/加上可选的":"后跟/port/（当没使用默认的端口时）。
-	5. 请求必须包含Upgrade头域，其值必须含有"websocket"关键字。
-	6. 请求必须含有Connection头域，其值必须含有"Upgrade"记号。
-	7. 请求必须包含名为Sec-WebSocket-Key的头域，其值必须是`nonce`组成的随机选择的16字节的被`base64`编码后的值。必须为每个连接随机选择`nonce`。
+3. 请求的Request-URI部分必须符合第3章定义的/resource name/，或者是绝对的`http/https URI`，当解析后，有个`/resource name/，/host/, /port/`，符合对应的`ws/wss `URI。
+
+
+4. 请求必须含有Host头域，它的值包含/host/加上可选的":"后跟/port/（当没使用默认的端口时）。
+
+5. 请求必须包含Upgrade头域，其值必须含有"websocket"关键字。
+
+6. 请求必须含有Connection头域，其值必须含有"Upgrade"记号。
+
+7. 请求必须包含名为Sec-WebSocket-Key的头域，其值必须是`nonce`组成的随机选择的16字节的被`base64`编码后的值。必须为每个连接随机选择`nonce`。
 		注意：例如，如果随机选取的一序列字节值是`0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08 0x09 0x0a 0x0b 0x0c 0x0d 0x0e 0x0f 0x10`，头域的值应该是`AQIDBAUGBwgJCgsMDQ4PEC==`。
-	8. 如果请求来自浏览器客户端，必须包含名为Origin的头域。如果连接来自非浏览器客户端，请求可能包括这个头域，如果那个客户端的语义符合此处浏览器客户端描述的用例。这个头域的值是建立连接的代码运行环境的origin的ASCII序列。在【RFC6454】有描述此头域值是如何构建的。
+
+8. 如果请求来自浏览器客户端，必须包含名为Origin的头域。如果连接来自非浏览器客户端，请求可能包括这个头域，如果那个客户端的语义符合此处浏览器客户端描述的用例。这个头域的值是建立连接的代码运行环境的origin的ASCII序列。在【RFC6454】有描述此头域值是如何构建的。
 		例如，下载子www.example.com的代码尝试建立连接到ww2.example.com，此头域的值应该是"http://www.example.com"。
-	9. 请求必须包含名为Sec-WebSocket-Version的头域，其值必须是13。
+
+9. 请求必须包含名为Sec-WebSocket-Version的头域，其值必须是13。
 	注意：Although draft versions of this document (-09, -10, -11, and -12) were posted (they were mostly comprised of editorial changes and clarifications and not changes to the wire protocol), values 9, 10, 11, and 12 were not used as valid values for Sec-WebSocket-Version. These values were reserved in the IANA registry but were not and will not be used.
+
 	10. 请求可能包含名为Sec-WebSocket-Protocol的头域。如果有，此值指示客户端希望使用的一个或多个逗号分隔的子协议，按优选顺序。组成此值的元素必须是非空字符串，字符范围在U+0021到U+007E，不包括在【RFC2616】定义的分隔符，而且必须是唯一的字符串。此头域值的ABNF是1#token，构建和规则在【RFC2616】定义。
-	11. 请求可能包含名为Sec-WebSocket-Extensions的头域。如果有，其值指示了客户端希望使用的协议级别的扩展。此头域的解释和格式在9.1节描述。
-	12. 请求可能包含任意的其他头域。例如cookies和/或认证相关的头域，如Authorization头域。
+	
+11. 请求可能包含名为Sec-WebSocket-Extensions的头域。如果有，其值指示了客户端希望使用的协议级别的扩展。此头域的解释和格式在9.1节描述。
+	
+12. 请求可能包含任意的其他头域。例如cookies和/或认证相关的头域，如Authorization头域。
 	
 一旦客户端打开握手发送出去，在发送任何数据之前，客户端必须等待服务器的响应。客户端必须按如下步骤验证响应：
 
-	1. 如果从服务器接收到的状态码不是101，按HTTP【RFC2616】程序处理响应。在特殊情况下，如果客户端接收到401状态码，可能执行认证；服务器可能用3xx状态码重定向客户端（但不要求客户端遵循他们），等等。否则按下面处理。
-	2. 如果响应缺失Upgrade头域或Upgrade头域的值没有包含大小写不敏感的ASCII 值"websocket"，客户端必须使WebSocket连接失败。
-	3. 如果响应缺失Connection头域或其值不包含大小写不敏感的ASCII值"Upgrade"，客户端必须使WebSocket连接失败。
-	4. 如果响应缺失Sec-WebSocket-Accept头域或其值不包含 |Sec-WebSocket-Key |（作为字符串，非base64解码的）+ "258EAFA5-E914-47DA-95CA-C5AB0DC85B11" 的base64编码 SHA-1值，客户端必须使WebSocket连接失败。
-	5. 如果响应包含Sec-WebSocket-Extensions头域，且其值指示使用的扩展不出现在客户端发送的握手（服务器指示的扩展不是客户端要求的），客户端必须使WebSocket连接失败。（解析此头域来决定哪个扩展是要求的在第9.1节描述。）
-	6. 如果响应包含Sec-WebSocket-Protocol头域，且这个头域指示使用的子协议不包含在客户端的握手（服务器指示的子协议不是客户端要求的），客户端必须使WebSocket连接失败。
+1. 如果从服务器接收到的状态码不是101，按HTTP【RFC2616】程序处理响应。在特殊情况下，如果客户端接收到401状态码，可能执行认证；服务器可能用3xx状态码重定向客户端（但不要求客户端遵循他们），等等。否则按下面处理。
+
+2. 如果响应缺失Upgrade头域或Upgrade头域的值没有包含大小写不敏感的ASCII 值"websocket"，客户端必须使WebSocket连接失败。
+
+3. 如果响应缺失Connection头域或其值不包含大小写不敏感的ASCII值"Upgrade"，客户端必须使WebSocket连接失败。
+
+4. 如果响应缺失Sec-WebSocket-Accept头域或其值不包含 |Sec-WebSocket-Key |（作为字符串，非base64解码的）+ "258EAFA5-E914-47DA-95CA-C5AB0DC85B11" 的base64编码 SHA-1值，客户端必须使WebSocket连接失败。
+
+5. 如果响应包含Sec-WebSocket-Extensions头域，且其值指示使用的扩展不出现在客户端发送的握手（服务器指示的扩展不是客户端要求的），客户端必须使WebSocket连接失败。（解析此头域来决定哪个扩展是要求的在第9.1节描述。）
+
+6. 如果响应包含Sec-WebSocket-Protocol头域，且这个头域指示使用的子协议不包含在客户端的握手（服务器指示的子协议不是客户端要求的），客户端必须使WebSocket连接失败。
 
 
 如果服务器响应不遵从4.2.2节和本节定义服务器握手的要求，客户端必须使WebSocket连接失败。
@@ -347,46 +362,54 @@ Clients MUST use the Server Name Indication extension in the TLS handshake [`RFC
 
 客户端握手包含下面的部分。如果服务器在读取握手时，发现客户端发送的握手不符合下面的描述（注意，安装RFC2616，头域的顺序是不重要的），包括但不限于任何违反ABNF语法指定的握手组件，服务器必须停止处理客户端握手，并返回恰当的HTTP响应，如 400 bad request。验证步骤：
 
-	1. 一个`HTTP/1.1`或更高的GET请求，包括应该解释为`/resource name/`的`Request-URI`（或者是一个绝对的HTTP/HTTPS URI包含`/resource name/`）。
-	2. 一个Host头域包含服务器的职权（authority）。
-	3. 一个Upgrade头域包含一个ASCII大小写不敏感的值"websocket"。
-	4. 一个Connection 头域包含一个ASCII大小写不敏感的令牌 "Upgrade"。
-	5. 一个Sec-WebSocket-Key 头域有一个base64编码的值，解码后是一个16字节长度。
-	6. 一个Sec-WebSocket-Version 头域且值为13。
-	7. 可选的一个Origin头域。此头域由所有的浏览器客户端发送。缺少这个头域的连接不应该解释为来自浏览器客户端。
-	8. 可选的一个Sec-WebSocket-Protocol 头域，有一序列的值，表示客户端希望用来交流的协议，按优选排序。
-	9. 可选的一个Sec-WebSocket-Extensions头域。有一序列的值，表示客户端希望用来交流的扩展，按优选排序。此头域的解释在9.1节讨论。
-	10. 可选的其他头域，用于发送cookie或请求认证到服务器。按RFC2616，未知的头域将被忽略。
+1. 一个`HTTP/1.1`或更高的GET请求，包括应该解释为`/resource name/`的`Request-URI`（或者是一个绝对的HTTP/HTTPS URI包含`/resource name/`）。
+
+2. 一个Host头域包含服务器的职权（authority）。
+
+3. 一个Upgrade头域包含一个ASCII大小写不敏感的值"websocket"。
+
+4. 一个Connection 头域包含一个ASCII大小写不敏感的令牌 "Upgrade"。
+
+5. 一个Sec-WebSocket-Key 头域有一个base64编码的值，解码后是一个16字节长度。
+
+6. 一个Sec-WebSocket-Version 头域且值为13。
+
+7. 可选的一个Origin头域。此头域由所有的浏览器客户端发送。缺少这个头域的连接不应该解释为来自浏览器客户端。
+
+8. 可选的一个Sec-WebSocket-Protocol 头域，有一序列的值，表示客户端希望用来交流的协议，按优选排序。
+
+9. 可选的一个Sec-WebSocket-Extensions头域。有一序列的值，表示客户端希望用来交流的扩展，按优选排序。此头域的解释在9.1节讨论。
+
+10. 可选的其他头域，用于发送cookie或请求认证到服务器。按RFC2616，未知的头域将被忽略。
 
 ### 4.2.2 发送服务器打开握手
 当客户端建立一个到服务器的WebSocket连接，服务器必须完成下面的步骤来接受连接，并发送服务器打开握手。
 
-	1. 如果连接在HTTPS（HTTP-over-TLS）端口上打开，在连接上执行TLS握手。如果失败了，关闭连接；否则，连接的所有后续的通信（包括服务器握手）必须在加密的通道上进行。
-	2. 服务器可以执行额外的客户端验证，例如，通过返回`401`状态码和相应的`WWW-Authenticate`头域。
-	3. 服务器可能用`3xx`状态码来重定向客户端。注意，这个步骤可以和上面描述的认证步骤 一起、之前或之后发生。
-	4. 建立下面的信息：<pre><code>
-		/origin/
-　　			客户端握手的|Origin|头域指示了建立连接的脚本的起源。起源被序列化为ASCII，并转换为小写。服务器可能使用这个信息来作为决定是否接收连接的部分因素。如果服务器不能验证起源，它将接收来自任何地方的连接。如果服务器不想接收这个连接，它必须返回合适的HTTP错误码（如403 Forbidden），并中止WebSocket握手，按本节的描述。更多细节，见第10章。
-		/key/
-			客户端握手的|Sec-WebSocket-Key|包含一个base64编码的值，如果解码，将是16字节长度。此值（编码后的）用于创建服务器握手，来指示接收连接。服务器没有必要base64解码此值。
-		/version/
-		　　客户端握手的|Sec-WebSocket-Version|包含WebSocket协议的版本，客户端用这个来尝试通信。如果这个版本不符合服务器能理解的版本，服务器必须中止WebSocket握手，发送一个合适HTTP错误码（如426 Upgrade Required），且有一个|Sec-WebSocket-Version|头域来指示服务器能够理解的版本。
-		　　
+1. 如果连接在HTTPS（HTTP-over-TLS）端口上打开，在连接上执行TLS握手。如果失败了，关闭连接；否则，连接的所有后续的通信（包括服务器握手）必须在加密的通道上进行。
+
+2. 服务器可以执行额外的客户端验证，例如，通过返回`401`状态码和相应的`WWW-Authenticate`头域。
+
+3. 服务器可能用`3xx`状态码来重定向客户端。注意，这个步骤可以和上面描述的认证步骤 一起、之前或之后发生。
+
+4. 建立下面的信息：
+		<pre><code>
+		/origin/　　			客户端握手的|Origin|头域指示了建立连接的脚本的起源。起源被序列化为ASCII，并转换为小写。服务器可能使用这个信息来作为决定是否接收连接的部分因素。如果服务器不能验证起源，它将接收来自任何地方的连接。如果服务器不想接收这个连接，它必须返回合适的HTTP错误码（如403 Forbidden），并中止WebSocket握手，按本节的描述。更多细节，见第10章。
+		/key/			客户端握手的|Sec-WebSocket-Key|包含一个base64编码的值，如果解码，将是16字节长度。此值（编码后的）用于创建服务器握手，来指示接收连接。服务器没有必要base64解码此值。
+		/version/		　　客户端握手的|Sec-WebSocket-Version|包含WebSocket协议的版本，客户端用这个来尝试通信。如果这个版本不符合服务器能理解的版本，服务器必须中止WebSocket握手，发送一个合适HTTP错误码（如426 Upgrade Required），且有一个|Sec-WebSocket-Version|头域来指示服务器能够理解的版本。
 		/resource name/
 		　　一个用于服务器提供的服务的标识符。如果服务器提供了多个服务，值应该能从`resource name`推断得到，从给定客户端握手的GET方法的`Request-URI`。如果请求的服务不可得，服务器必须发送合适的HTTP错误码（如`404 Not Found`），并中止WebSocket握手。
-		　　
-		/subprotocol/
-		　　或者是空，或者是单个值表示服务器准备使用的子协议。值的选择必须从客户端握手推断得到，具体是从`Sec-WebSocket-Protocol`选择一个值，服务器将用于这个连接的。如果客户端握手不包含这样1个头域或者服务器不同意使用客户端请求的子协议，唯一可接受的值是`null`。没有这个域等价于null值（意味着如果服务器不打算使用任何推荐的子协议，它必须不发送回一个|Sec-WebSocket-Protocol|头域在它的响应里）。在这个目的上，Empty字符串不同于null值，且不是这个域的合法值。用于此头域值的ABNF是（token），构建和规则在RFC2616定义。
-		　　
-		/extensions/
-		一个（可能空的）列表表示服务器准备使用的协议级扩展。如果服务器支持多个扩展，那么值必须从客户端握手推断得到，具体是从`Sec-WebSocket-Extensions`域选择一个或多个值。此域的缺失等价于`null`值。在这个目的上，Empty字符串不同于`null`值。没有列在客户端的扩展必须不被登记。选择和解释这些值的方法在`9.1`节讨论。
+		/subprotocol/		　　或者是空，或者是单个值表示服务器准备使用的子协议。值的选择必须从客户端握手推断得到，具体是从`Sec-WebSocket-Protocol`选择一个值，服务器将用于这个连接的。如果客户端握手不包含这样1个头域或者服务器不同意使用客户端请求的子协议，唯一可接受的值是`null`。没有这个域等价于null值（意味着如果服务器不打算使用任何推荐的子协议，它必须不发送回一个|Sec-WebSocket-Protocol|头域在它的响应里）。在这个目的上，Empty字符串不同于null值，且不是这个域的合法值。用于此头域值的ABNF是（token），构建和规则在RFC2616定义。
+		/extensions/		一个（可能空的）列表表示服务器准备使用的协议级扩展。如果服务器支持多个扩展，那么值必须从客户端握手推断得到，具体是从`Sec-WebSocket-Extensions`域选择一个或多个值。此域的缺失等价于`null`值。在这个目的上，Empty字符串不同于`null`值。没有列在客户端的扩展必须不被登记。选择和解释这些值的方法在`9.1`节讨论。
 		</code></pre>
 
-	5. 如果服务器选择接受连接，必须返回一个合法的HTTP响应，指示下面：
-		1. 一个状态行，有`101`响应码，按照`RFC2616`。这样一个响应看起来是这样：`HTTP/1.1 101 Switching Protocols`
-		2. 一个`Upgrade` 头域，值为`websocket`，按照`RFC2616`。
-		3. 一个`Connection`头域，值为`Upgrade`。
-		4. 一个`Sec-WebSocket-Accept` 头域。The value of this header field is constructed by concatenating /key/, defined above in step 4 in Section 4.2.2, with the string `258EAFA5-E914-47DA-95CA-C5AB0DC85B11`, taking the SHA-1 hash of this c	oncatenated value to obtain a 20-byte value and base64-encoding (see Section 4 of 	[RFC4648]) this 20-byte hash.
+5. 如果服务器选择接受连接，必须返回一个合法的HTTP响应，指示下面：
+	1. 一个状态行，有`101`响应码，按照`RFC2616`。这样一个响应看起来是这样：`HTTP/1.1 101 Switching Protocols`
+	
+	2. 一个`Upgrade` 头域，值为`websocket`，按照`RFC2616`。
+	
+	3. 一个`Connection`头域，值为`Upgrade`。
+	
+	4. 一个`Sec-WebSocket-Accept` 头域。The value of this header field is constructed by concatenating /key/, defined above in step 4 in Section 4.2.2, with the string `258EAFA5-E914-47DA-95CA-C5AB0DC85B11`, taking the SHA-1 hash of this c	oncatenated value to obtain a 20-byte value and base64-encoding (see Section 4 of 	[RFC4648]) this 20-byte hash.
 		The ABNF [RFC2616] of this header field is defined as follows:
 			<pre><code>
 		　　Sec-WebSocket-Accept = base64-value-non-empty
@@ -398,7 +421,9 @@ Clients MUST use the Server Name Indication extension in the TLS handshake [`RFC
 		　　base64-character = ALPHA | DIGIT | "+" | "/"
 			</code></pre>
 		NOTE: As an example, if the value of the |Sec-WebSocket-Key| header field in the client’s handshake were "dGhlIHNhbXBsZSBub25jZQ==", the server would append the string "258EAFA5-E914-47DA-95CA-C5AB0DC85B11" to form the string "dGhlIHNhbXBsZSBub25jZQ==258EAFA5-E914-47DA-95CAC5AB0DC85B11". The server would then take the SHA-1 hash of this string, giving the value 0xb3 0x7a 0x4f 0x2c 0xc0 0x62 0x4f 0x16 0x90 0xf6 0x46 0x06 0xcf 0x38 0x59 0x45 0xb2 0xbe 0xc4 0xea. This value is then base64-encoded, to give the value "s3pPLMBiTxaQ9kYGzzhZRbK+xOo=", which would be returned in the |Sec-WebSocket-Accept| header field.
+	
 	5. 可选的一个`Sec-WebSocket-Protocol` 头域，其值`/subprotocol/`在`4.2.2`节步骤4定义。
+	
 	6. 可选的一个`Sec-WebSocket-Extensions` 头域，其值`/extensions/`在`4.2.2`节步骤4定义。如果使用多个`extension`，可以在罗列单个`Sec-WebSocket-Extensions` 头域，也可以分割在多个`Sec-WebSocket-Extensions` 。
 		
 这完成了服务器握手。如果服务器完成这些步骤，且没有终止WebSocket握手，服务器认为WebSocket连接已建立，那么WebSocket连接处于`OPEN`状态。在此时，服务器可能开始发送（和接收）数据。
