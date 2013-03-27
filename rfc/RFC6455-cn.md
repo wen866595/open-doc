@@ -392,17 +392,26 @@ Clients MUST use the Server Name Indication extension in the TLS handshake [`RFC
 3. 服务器可能用`3xx`状态码来重定向客户端。注意，这个步骤可以和上面描述的认证步骤 一起、之前或之后发生。
 
 4. 建立下面的信息：
-		<pre><code>
-		/origin/　　			客户端握手的|Origin|头域指示了建立连接的脚本的起源。起源被序列化为ASCII，并转换为小写。服务器可能使用这个信息来作为决定是否接收连接的部分因素。如果服务器不能验证起源，它将接收来自任何地方的连接。如果服务器不想接收这个连接，它必须返回合适的HTTP错误码（如403 Forbidden），并中止WebSocket握手，按本节的描述。更多细节，见第10章。
-		/key/			客户端握手的|Sec-WebSocket-Key|包含一个base64编码的值，如果解码，将是16字节长度。此值（编码后的）用于创建服务器握手，来指示接收连接。服务器没有必要base64解码此值。
-		/version/		　　客户端握手的|Sec-WebSocket-Version|包含WebSocket协议的版本，客户端用这个来尝试通信。如果这个版本不符合服务器能理解的版本，服务器必须中止WebSocket握手，发送一个合适HTTP错误码（如426 Upgrade Required），且有一个|Sec-WebSocket-Version|头域来指示服务器能够理解的版本。
-		/resource name/
-		　　一个用于服务器提供的服务的标识符。如果服务器提供了多个服务，值应该能从`resource name`推断得到，从给定客户端握手的GET方法的`Request-URI`。如果请求的服务不可得，服务器必须发送合适的HTTP错误码（如`404 Not Found`），并中止WebSocket握手。
-		/subprotocol/		　　或者是空，或者是单个值表示服务器准备使用的子协议。值的选择必须从客户端握手推断得到，具体是从`Sec-WebSocket-Protocol`选择一个值，服务器将用于这个连接的。如果客户端握手不包含这样1个头域或者服务器不同意使用客户端请求的子协议，唯一可接受的值是`null`。没有这个域等价于null值（意味着如果服务器不打算使用任何推荐的子协议，它必须不发送回一个|Sec-WebSocket-Protocol|头域在它的响应里）。在这个目的上，Empty字符串不同于null值，且不是这个域的合法值。用于此头域值的ABNF是（token），构建和规则在RFC2616定义。
-		/extensions/		一个（可能空的）列表表示服务器准备使用的协议级扩展。如果服务器支持多个扩展，那么值必须从客户端握手推断得到，具体是从`Sec-WebSocket-Extensions`域选择一个或多个值。此域的缺失等价于`null`值。在这个目的上，Empty字符串不同于`null`值。没有列在客户端的扩展必须不被登记。选择和解释这些值的方法在`9.1`节讨论。
-		</code></pre>
+	/origin/   
+	客户端握手的`Origin`头域指示了建立连接的脚本的起源。起源被序列化为`ASCII`，并转换为小写。服务器可能使用这个信息来作为决定是否接收连接的部分因素。如果服务器不能验证起源，它将接收来自任何地方的连接。如果服务器不想接收这个连接，它必须返回合适的HTTP错误码（如`403 Forbidden`），并中止WebSocket握手，按本节的描述。更多细节，见第`10`章。
+	
+	/key/   
+	客户端握手的`Sec-WebSocket-Key`包含一个`base64`编码的值，如果解码，将是`16`字节长度。此值（编码后的）用于创建服务器握手，来指示接收连接。服务器没有必要`base64`解码此值。
+	
+	/version/   
+	　　客户端握手的|Sec-WebSocket-Version|包含WebSocket协议的版本，客户端用这个来尝试通信。如果这个版本不符合服务器能理解的版本，服务器必须中止WebSocket握手，发送一个合适HTTP错误码（如426 Upgrade Required），且有一个|Sec-WebSocket-Version|头域来指示服务器能够理解的版本。
+	
+	/resource name/   
+	一个用于服务器提供的服务的标识符。如果服务器提供了多个服务，值应该能从`resource name`推断得到，从给定客户端握手的GET方法的`Request-URI`。如果请求的服务不可得，服务器必须发送合适的HTTP错误码（如`404 Not Found`），并中止WebSocket握手。
+	
+	/subprotocol/   
+	或者是空，或者是单个值表示服务器准备使用的子协议。值的选择必须从客户端握手推断得到，具体是从`Sec-WebSocket-Protocol`选择一个值，服务器将用于这个连接的。如果客户端握手不包含这样1个头域或者服务器不同意使用客户端请求的子协议，唯一可接受的值是`null`。没有这个域等价于null值（意味着如果服务器不打算使用任何推荐的子协议，它必须不发送回一个|Sec-WebSocket-Protocol|头域在它的响应里）。在这个目的上，Empty字符串不同于null值，且不是这个域的合法值。用于此头域值的ABNF是（token），构建和规则在RFC2616定义。
+	
+	/extensions/   
+	一个（可能空的）列表表示服务器准备使用的协议级扩展。如果服务器支持多个扩展，那么值必须从客户端握手推断得到，具体是从`Sec-WebSocket-Extensions`域选择一个或多个值。此域的缺失等价于`null`值。在这个目的上，Empty字符串不同于`null`值。没有列在客户端的扩展必须不被登记。选择和解释这些值的方法在`9.1`节讨论。
 
 5. 如果服务器选择接受连接，必须返回一个合法的HTTP响应，指示下面：
+
 	1. 一个状态行，有`101`响应码，按照`RFC2616`。这样一个响应看起来是这样：`HTTP/1.1 101 Switching Protocols`
 	
 	2. 一个`Upgrade` 头域，值为`websocket`，按照`RFC2616`。
@@ -542,7 +551,7 @@ The client now repeats the handshake that conforms to version 13:
 
 
 ## 5.2 基本的帧协议
-用于数据传输部分的有线格式用ABNF描述，细节在本节。（注意，不像本文档中的其他章节，本节的ABNF是作用于一组比特位上。每组比特位的长度在注释里指示。当在有线上编码后，最重要的比特的最左边的ABNF）。帧的一个高层概览见下图。当下图与ABNF有冲突时，图是权威的。
+用于数据传输部分的有线格式用ABNF描述，细节在本节。（注意，不像本文档中的其他章节，本节的ABNF是作用于一组比特位上。每组比特位的长度在注释里指示。当在有线上编码后，最重要的比特的最左边的ABNF）。帧的一个高层概览见下图。当下图与ABNF有冲突时，图是权威的。   
 ![](websocket-frame.jpg)
 
 <pre><code>
@@ -550,10 +559,10 @@ FIN： 1bit
 　　表示此帧是否是消息的最后帧。第一帧也可能是最后帧。
 
 RSV1，RSV2，RSV3： 各1bit 
-　　必须是0，除非协商了扩展定义了非0的意义。如果接收到非0，且没有协商扩展定义	此值的意义，接收端必须使WebSocket连接失败。
+　　必须是0，除非协商了扩展定义了非0的意义。如果接收到非0，且没有协商扩展定义此值的意义，接收端必须使WebSocket连接失败。
 
 Opcode： 4bit 
-　　定义了"Payload data"的解释。如果接收到未知的操作码，接收端必须使WebSocket 	连接失败。下面的值是定义了的。
+　　定义了"Payload data"的解释。如果接收到未知的操作码，接收端必须使WebSocket连接失败。下面的值是定义了的。
 　　%x0 表示一个后续帧
 　　%x1 表示一个文本帧
 　　%x2 表示一个二进制帧
@@ -564,10 +573,10 @@ Opcode： 4bit
 　　%xB-F 为以后的控制帧保留
 
 Mask： 1bit
-　　定义了"Payload data"是否标记了。如果设为1，必须有标记键出现在masking-key，用	来unmask "payload data"，见5.3节。所有从客户端发往服务器的帧必须把此位设为1。
+　　定义了"Payload data"是否标记了。如果设为1，必须有标记键出现在masking-key，用来unmask "payload data"，见5.3节。所有从客户端发往服务器的帧必须把此位设为1。
 
 Payload length： 7bit, 7 + 16bit, 7 + 64bit
-　　"Payload data"的长度，字节单位。如果值是0-125，则是有效载荷长度。如果是126，	接下来的2字节解释为16位无符号整数，作为有效载荷长度。如果127，接下来的8	字节解释为64位无符号整数（最高位必须是0），作为有效载荷长度。多字节长度数值	以网络字节序表示。注意，在任何情况下，必须用最小数量的字节来编码长度，例如，	124字节	长的字符串不能编码为序列126, 0, 124。有效载荷长度是"Extension data"的长	度加上"Application data"的长度。"Extension data"的长度可能是0，在这种情况下，	有效载荷长度是"Application data"的长度。
+　　"Payload data"的长度，字节单位。如果值是0-125，则是有效载荷长度。如果是126，	接下来的2字节解释为16位无符号整数，作为有效载荷长度。如果127，接下来的8	字节解释为64位无符号整数（最高位必须是0），作为有效载荷长度。多字节长度数值	以网络字节序表示。注意，在任何情况下，必须用最小数量的字节来编码长度，例如，124字节	长的字符串不能编码为序列126, 0, 124。有效载荷长度是"Extension data"的长	度加上"Application data"的长度。"Extension data"的长度可能是0，在这种情况下，	有效载荷长度是"Application data"的长度。
 
 Masking-key：`0`或`4`字节
 　　所有从客户端发往服务器的帧必须用`32`位值标记，此值在帧里。如果mask位设为1，此字段（`32`位值）出现，否则缺失。更多的信息在`5.3`节，客户端到服务器标记。
@@ -579,7 +588,7 @@ Extension data： x 字节
 　　"Extension data"是0字节，除非协商了扩张。所有扩张必须指定"extension data"的长度，	或者如何计算长度，如何使用扩展必须在打开握手时进行协商。如果有，"Extension 	data"包括在有效载荷长度。
 
 Application data： y字节   
-任意"Application data"占据了帧的剩余部分，在"Extension data"之后。	"Application data"的长度等于有效载荷长度减去"Extension data"的长度。
+任意"Application data"占据了帧的剩余部分，在"Extension data"之后。"Application data"的长度等于有效载荷长度减去"Extension data"的长度。
 </code></pre>
 
 The base framing protocol is formally defined by the following ABNF
